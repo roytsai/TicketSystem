@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking</title>
+    <link rel='stylesheet' href='./stylesheets/style.css' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="./web3/dist/web3.min.js"></script>
+    <script src="./javascripts/TSUtils.js"></script>
+    <script type="text/javascript">
+
+        var accountAddress ;
+        const TOTAL_SEAT = 30;
+
+        const SelectMode = {
+            INIT: 0,
+            DEFAULT: 1,
+            OWN: 2,
+            TRANSFER: 3
+        };
+        var mSeatSelectMode = SelectMode.INIT;
+        $("body").ready(function() {
+            if (typeof web3 !== 'undefined') {
+                web3 = new Web3(web3.currentProvider);
+
+                web3.eth.getAccounts(function(error, accounts) {
+                    console.log('getAccounts = ',web3.eth.accounts);
+                    if (web3.eth.accounts[0] !== accountAddress) {
+                        $("#messageBox").append("<br><br> >>> User <span style='color: green'>"+web3.eth.accounts[0]+"</span> Login");
+                        scrollToBottom();
+                        accountAddress = web3.eth.accounts[0];
+
+                        updateStatus(function() {
+                            setupSeatClick();
+                            queryToken();
+                        });
+                    }
+                });
+                getNetworkType();
+
+                var accountInterval = setInterval(function () {
+                    web3.eth.getAccounts(function(error, accounts) {
+                        if (web3.eth.accounts[0] !== accountAddress) {
+                            $("#messageBox").append("<br><br> >>> User <span style='color: green'>"+web3.eth.accounts[0]+"</span> Login");
+                            scrollToBottom();
+                            accountAddress = web3.eth.accounts[0];
+                            updateStatus();
+                        }
+                    });
+
+                }, 1000);
+
+            } else {
+                web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+                $("#messageBox").append("<br><br> >>> <span style='color: red'> Please install MetaMask </span>");
+                return;
+            }
+            console.log(web3.currentProvider);
+
+        });
+
+        function getNetworkType(){
+            var netId = web3.version.getNetwork(function(error, netId){
+                console.log('netId = ',netId);
+                var netStr = "";
+                switch (netId) {
+                    case "1":
+                        netStr = "This is mainnet";
+                        break
+                    case "3":
+                        netStr = "This is the ropsten test network.";
+                        break
+                    case "4":
+                        netStr = "This is the rinkeby test network.";
+                        break
+                    case "42":
+                        netStr = "This is the kovan test network.";
+                        break
+                    default:
+                        netStr = "This is an unknown network.";
+
+                }
+                $("#messageBox").append("<br><br> >>> "+netStr);
+                scrollToBottom();
+            });
+        }
+
+    </script>
+
+</head>
+<body class="tickets" onload="">
+<H1>Ticketing System</H1>
+<br>
+<div id="seat" style="margin-bottom: 30px">
+    <!--<div style="text-align: center; font-size: 30px; margin: 30px">-->
+        <!--<span class="stage">stage</span>-->
+    <!--</div>-->
+    <table class="grid" id="seatTable">
+        <tr>
+            <% for(var i=0;i<10;i++){%>
+                <td id="cell<%= i %>" > A<%= i %> </td>
+            <% } %>
+        </tr>
+        <tr>
+            <% for(var i=0;i<10;i++){%>
+                <td id="cell<%= (i+10) %>" > B<%= i %> </td>
+            <% } %>
+        </tr>
+        <tr>
+            <% for(var i=0;i<10;i++){%>
+                <td id="cell<%= (i+20) %>" > C<%= i %> </td>
+            <% } %>
+        </tr>
+    </table>
+    <div style="text-align: center; font-size: 30px;">
+
+        <table class="grid" style="border-collapse:collapse;margin:0px; margin-left:auto;margin-right: auto" id="seatTable">
+            <tr>
+                <td id="description" class="sell">  </td>
+                <td id="description" style="background-color: transparent"> sell </td>
+                <td id="description" class="own">  </td>
+                <td id="description" style="background-color: transparent"> own </td>
+                <td id="description" class="transfer">  </td>
+                <td id="description" style="background-color: transparent"> transfer </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div class="block" id="messageBox" style="outline: 2px double #444444; width:100%; overflow-y: scroll; background-color: black;color: #dddddd">
+    >>> Environment init ......
+</div>
+
+<br>
+<button id="earnTokenBtn" class="Gbutton" onclick="earnToken()" >Earn Token</button>
+<button id="queryTokenBtn" class="Gbutton" onclick="queryToken()" >Query Token</button>
+<button id="buyTicketsBtn" class="Gbutton" style="display: none;" onclick="buyTickets()" >Buy Tickets</button>
+<button id="transferTicketsBtn" class="Gbutton" style="display: none;" onclick="transferTickets()">Transfer Tickets</button>
+<button id="cancelTransferBtn" class="Gbutton" style="display: none;" onclick="cancelTransfer()">Cancel Transfer</button>
+
+</body>
+</html>

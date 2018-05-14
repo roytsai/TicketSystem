@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Booking</title>
+        <link rel='stylesheet' href='./stylesheets/style.css' />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script src="./web3/dist/web3.min.js"></script>
+        <script type="text/javascript">
+
+//            var Web3 = require('web3');
+            (function () {
+//                if (typeof web3 !== 'undefined') {
+//                    web3 = new Web3(web3.currentProvider);
+//                } else {
+//                    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:6789"));
+//                }
+//                console.log("web3.currentProvider = ",web3.currentProvider);
+            })();
+
+            function deployContract(){
+                console.log("deploy contract");
+
+                if(checkURL() && checkPrivateKey()){
+                    $("#deployButton").prop("disabled", true);
+                    $("#receipt").text("Padding Confirmation");
+                    $("#queryUrl").text("");
+                    var myTimeInterval = setInterval(function(){
+                        var s = new Date().getSeconds();
+                        if(s%4 == 0){
+                            $("#receipt").text("Padding Confirmation");
+                        }else if(s%4 == 1){
+                            $("#receipt").text("Padding Confirmation ...");
+                        }else if(s%4 == 2){
+                            $("#receipt").text("Padding Confirmation ......");
+                        }else if(s%4 == 3){
+                            $("#receipt").text("Padding Confirmation .........");
+                        }
+                    }, 1000);
+
+                    $.ajax({
+                        type:'POST',
+                        data:  { url : $("#providerUrl").text(),
+                                privateKey: $("#privateKey").val()},
+                        url: './web3/deploy',
+                        dataType: 'text',
+                        cache: false,
+                        timeout: 1000*90,
+                        success: function(data){
+                            $("#deployButton").prop("disabled", false);
+                            var value = document.getElementById("providerSelect").value;
+
+                            if(value == "ropsten"){
+                                $("#receipt").text("[TransactionHash] : \n"+ data );
+                                $("#queryUrl").attr("href", "https://ropsten.etherscan.io/tx/"+data);
+                                $("#queryUrl").text("https://ropsten.etherscan.io/tx/"+data);
+                            }else{
+                                $("#receipt").text("[TransactionHash] : \n"+ data );
+                                $("#queryUrl").text("");
+                            }
+
+                            clearInterval(myTimeInterval);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            $("#deployButton").prop("disabled", false);
+                            alert('error ' + textStatus + " " + errorThrown);
+                            clearInterval(myTimeInterval);
+                        }
+                    });
+                }
+
+            }
+
+            function setContract(){
+                console.log("set contract");
+                if(checkURL() && checkContractAddress()  && checkPrivateKey() && checkValueX()){
+                    $("#setButton").prop("disabled", true);
+                    $("#valueX").prop("disabled", true);
+                    $("#resultSet").text("Padding Confirmation");
+                    var myTimeInterval = setInterval(function(){
+                        var s = new Date().getSeconds();
+                        if(s%4 == 0){
+                            $("#resultSet").text("Padding Confirmation");
+                        }else if(s%4 == 1){
+                            $("#resultSet").text("Padding Confirmation ...");
+                        }else if(s%4 == 2){
+                            $("#resultSet").text("Padding Confirmation ......");
+                        }else if(s%4 == 3){
+                            $("#resultSet").text("Padding Confirmation .........");
+                        }
+                    }, 1000);
+
+                    $.ajax({
+                        type:'POST',
+                        data: { url : $("#providerUrl").text(),
+                            contractAddress: $("#contractAddress").val(),
+                            privateKey: $("#privateKey").val(),
+                            valueX: $("#valueX").val()},
+                        url: './web3/set',
+                        dataType: 'text',
+                        cache: false,
+                        timeout: 1000*90,
+                        success: function(data){
+                            $("#setButton").prop("disabled", false);
+                            $("#valueX").prop("disabled", false);
+                            $("#resultSet").text(data);
+                            clearInterval(myTimeInterval);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            alert('error ' + textStatus + " " + errorThrown);
+                            $("#setButton").prop("disabled", false);
+                            $("#valueX").prop("disabled", false);
+                            $("#resultSet").text(errorThrown);
+                            clearInterval(myTimeInterval);
+                        }
+                    });
+                }
+            }
+
+            function getContract(){
+
+                console.log("get contract");
+                if(checkURL() && checkContractAddress()){
+                    $("#getButton").prop("disabled", true);
+                    $("#resultGet").text("loaing");
+                    var myTimeInterval = setInterval(function(){
+                        var s = new Date().getSeconds();
+                        if(s%4 == 0){
+                            $("#resultGet").text("loaing");
+                        }else if(s%4 == 1){
+                            $("#resultGet").text("loaing..");
+                        }else if(s%4 == 2){
+                            $("#resultGet").text("loaing....");
+                        }else if(s%4 == 3){
+                            $("#resultGet").text("loaing......");
+                        }
+                    }, 1000);
+                    $.ajax({
+                        type:'POST',
+                        data: { url : $("#providerUrl").text(),
+                            privateKey: $("#privateKey").val(),
+                            contractAddress: $("#contractAddress").val()},
+                        url: './web3/get',
+                        dataType: 'text',
+                        cache: false,
+                        timeout: 1000*10,
+                        success: function(data){
+                            console.log("success:",data);
+                            $("#resultGet").text(data);
+                            $("#getButton").prop("disabled", false);
+                            clearInterval(myTimeInterval);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            console.log("error:",textStatus,jqXHR,errorThrown);
+                            $("#resultGet").text(textStatus);
+                            $("#getButton").prop("disabled", false);
+                            clearInterval(myTimeInterval);
+                        }
+                    });
+                }
+            }
+
+            function providerChange(){
+                console.log("providerChange");
+                var value = document.getElementById("providerSelect").value;
+                var key = document.getElementById("infuraKey").value;
+                if(value == "testrpc"){
+                    $("#providerUrl").text("http://localhost:8545");
+                    $("#infuraKey").prop("disabled", true);
+                }else{
+                    $("#providerUrl").text("https://"+value+".infura.io/"+key);
+                    $("#infuraKey").prop("disabled", false);
+                }
+            }
+
+            function checkURL(){
+                var value = document.getElementById("providerSelect").value;
+                var key = document.getElementById("infuraKey").value;
+                if(value != "testrpc"){
+                    if(key == ''){
+                        alert("請輸入API KEY");
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function checkPrivateKey(){
+                if($("#privateKey").val() == ''){
+                    alert("請輸入Private Key");
+                    return false;
+                }
+                return true;
+            }
+
+            function checkContractAddress(){
+                if($("#contractAddress").val() == ''){
+                    alert("請輸入Contract Address");
+                    return false;
+                }
+                return true;
+            }
+
+            function checkValueX(){
+                if($("#valueX").val() == ''){
+                    alert("請輸入x");
+                    return false;
+                }
+                return true;
+            }
+
+        </script>
+    </head>
+    <body>
+        <H2>Environment Setting</H2>
+        <div style="background-color: #CCCCCC; padding: 20px">
+            <div class="row">
+                <span> URL: </span>
+                <select id="providerSelect" onchange="providerChange()">
+                    <option value="testrpc">Localhost 8545</option>
+                    <option value="mainnet">Main Ethereum Network</option>
+                    <option value="ropsten">Ropsten Test Network</option>
+                    <option value="kovan">Kovan Test Network</option>
+                    <option value="rinkeby">Rinkeby Test Network</option>
+                </select>
+                <input type="text" id="infuraKey" oninput="providerChange()" placeholder="API-key" disabled >
+                <span id="providerUrl"> http://localhost:8545 </span>
+            </div>
+
+            <div class="row">
+                <span> private key: </span>
+                <input type="text" id="privateKey" placeholder="0x2fe24b0..." >
+            </div>
+        </div>
+        <H2> Simple Contract Example</H2>
+        <div style=" width:1300px;">
+            <div class="block" style="outline: 2px dashed black; float: left;float:left;  width:400px;">
+                pragma solidity ^0.4.23;<br>
+
+                contract SimpleStorage {<br>
+                &nbsp;&nbsp; uint storedData;<br>
+
+                &nbsp;&nbsp; function set(uint x) public {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp; storedData = x;<br>
+                &nbsp;&nbsp; }<br>
+
+                &nbsp;&nbsp; function get() public constant returns (uint) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp; return storedData;<br>
+                &nbsp;&nbsp; }<br>
+                }<br>
+            </div>
+            <div class="block" style="outline: 2px dashed blue;margin-left: 30px;float:left;  width:700px; " >
+                <span id="receipt"></span> <br>
+                <a target="_blank" id="queryUrl"></a>
+            </div>
+        </div>
+
+        <div style="clear:both;"></div><br>
+        <button id="deployButton"  onclick="deployContract()">deploy contract</button><br>
+
+        <H2> Interacting with Smart Contracts </H2>
+        <div style="outline: 1px dashed black; padding: 20px;">
+            <div class="row">
+                <span> Contract Address: </span>
+                <input type="text" id="contractAddress" placeholder="0xf47c11..." >
+            </div>
+
+            <button id="setButton" onclick="setContract()">set(x)</button>
+            <input type="text" id="valueX" placeholder="uint256" > <span id="resultSet"></span>
+            <br>
+            <br>
+            <button id="getButton" onclick="getContract()">get()</button>
+            <span id="resultGet"></span>
+        </div>
+    </body>
+</html>
