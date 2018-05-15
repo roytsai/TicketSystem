@@ -24,7 +24,7 @@
   
   
   
-## 範例
+## 範例1
 	
 > 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。若期待web3能成功與測試網路溝通，除非自己成為節點或透過Infura，至[Infura](https://infura.io/signup) 官網申請，就可以收到 API-key。
 <img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/simple.jpg" width="500px">
@@ -91,6 +91,7 @@
     });
 ~~~
 
+## 範例2
 > 程式碼中的第二個範例，我利用ERC20-token來實作一個訂票系統，使用者安裝metamask後切換到ropsten，我在ropsten已經deploy了ticket和token contract，點選[earn token] Button，每按一次會發給你200元，每個座位是80元，購買後的座位可以再轉售出給別人，此範例是為了練習:
 
 ### 1. ERC-20 token的contract
