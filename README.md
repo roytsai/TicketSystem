@@ -24,11 +24,11 @@
   
   
   
-## 範例
+# 範例
 	
-- 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。
+## 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。
 
-#### 1. deploy({data:bytcode}).send() <br>
+### 1. deploy({data:bytcode}).send() <br>
   - abi, bytecode : 可透過solc編譯或是remix直接複製。
   - userAddress : 使用者帳號的address。
 ~~~
@@ -54,7 +54,7 @@
     })	
 ~~~
 
-#### 2. methods.myMethod().set() <br>
+### 2. methods.myMethod().set() <br>
   - userPrivateKey: 使用者的privateKey，會需要扣value的動作就會需要addWallet這個動作。<br>
   - contractAddress: 操作已deploy的contract的address。<br>
   - valueX: 合約中function的參數取決於你的設計。<br>
@@ -75,7 +75,7 @@
     });
 ~~~
 
-#### 3. methods.myMethod().call() <br>
+### 3. methods.myMethod().call() <br>
 
 ~~~
     var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
@@ -89,3 +89,13 @@
         }
     });
 ~~~
+
+## 程式碼中的第二個範例，我利用ERC20-token來實作一個訂票系統，使用者安裝metamask後切換到ropsten，我在此測試網路已經deploy了 ticket&token contract，點選[earn token] Button，每按一次會發給你200元，每個座位是80元，購買後的座位可以再轉售出給別人。此範例是為了讓你練習
+
+### 1. ERC-20 token的contract使用
+
+### 2. 不同contract間的溝通
+
+
+
+
