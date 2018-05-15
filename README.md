@@ -22,11 +22,13 @@
   4. npm install web3 (供後端使用)<br>
   
   
-	範例
+  
+  
+## 範例
 	
-- 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、methods.call、methods.send。
+- 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。
 
-#### 1.deploy <br>
+#### 1. deploy({data:bytcode}).send() <br>
   - abi, bytecode : 可透過solc編譯或是remix直接複製。
   - userAddress : 使用者帳號的address。
 ~~~
@@ -52,7 +54,7 @@
     })	
 ~~~
 
-#### 2. send <br>
+#### 2. methods.myMethod().set() <br>
   - userPrivateKey: 使用者的privateKey，會需要扣value的動作就會需要addWallet這個動作。<br>
   - contractAddress: 操作已deploy的contract的address。<br>
   - valueX: 合約中function的參數取決於你的設計。<br>
@@ -70,5 +72,20 @@
             console.error(error);
             console.log(transactionHash);
             res.send('ok');
+    });
+~~~
+
+#### 3. methods.myMethod().call() <br>
+
+~~~
+    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    var myContract = new web3.eth.Contract(abi, contractAddress, {gasPrice: '4000000000', from: userAddress});
+
+    myContract.methods.get().call({from: userAddress},function(error, result){
+        if(error == undefined){
+            res.send(String(result));
+        }else{
+            res.send(String(error));
+        }
     });
 ~~~
