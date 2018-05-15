@@ -15,7 +15,7 @@
   <img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/metamask.jpg" width="200px">
   
 ### 2. Decentralized Applications
-    我選擇透過nodejs+express的架構開發，並搭配[web3](https://web3js.readthedocs.io/en/1.0/)套件(1.0.0-beta.34)來操作deploy與methods，需要注意的是前端的web3版本只有到0.20.6與後端可能會不一致，程式碼的寫法會有所不同，初始步驟如下:<br>
+- 我選擇透過nodejs+express的架構開發，並搭配[web3](https://web3js.readthedocs.io/en/1.0/)套件(1.0.0-beta.34)來操作deploy與methods，需要注意的是前端的web3版本只有到0.20.6與後端可能會不一致，程式碼的寫法會有所不同，初始步驟如下:<br>
   1. 開啟一個nodejs專案<br>
   2. npm install bower -g<br>
   3. bower install web3 (供前端使用)<br>
@@ -24,9 +24,10 @@
   
   
   
-# 範例
+## 範例
 	
-## 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。
+> 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。若期待web3能成功與測試網路溝通，除非自己成為節點或透過Infura，至[Infura](https://infura.io/signup) 官網申請，就可以收到 API-key。
+<img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/simple.jpg" width="500px">
 
 ### 1. deploy({data:bytcode}).send() <br>
   - abi, bytecode : 可透過solc編譯或是remix直接複製。
@@ -90,9 +91,9 @@
     });
 ~~~
 
-## 程式碼中的第二個範例，我利用ERC20-token來實作一個訂票系統，使用者安裝metamask後切換到ropsten，我在此測試網路已經deploy了 ticket&token contract，點選[earn token] Button，每按一次會發給你200元，每個座位是80元，購買後的座位可以再轉售出給別人。此範例是為了讓你練習
+> 程式碼中的第二個範例，我利用ERC20-token來實作一個訂票系統，使用者安裝metamask後切換到ropsten，我在ropsten已經deploy了ticket和token contract，點選[earn token] Button，每按一次會發給你200元，每個座位是80元，購買後的座位可以再轉售出給別人，此範例是為了練習:
 
-### 1. ERC-20 token的contract使用
+### 1. ERC-20 token的contract
 
 ### 2. 不同contract間的溝通
 
