@@ -24,7 +24,7 @@
   
   
   
-## 範例1
+## 範例1 (simple_example.ejs)
 	
 > 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。<br>
 然而你想要成功連結測試網路，除非自己建立節點或透過Infura的節點進行溝通，至[Infura](https://infura.io/signup) 官網申請，就可以收到 API-key。
@@ -62,7 +62,7 @@
            });
 ~~~
 
-## 範例2
+## 範例2 (ticketing_system.js、ticketing_system.ejs)
 > 程式碼中的第二個範例，我利用ERC20-token來實作一個訂票系統，而我是在back-end操作contracts，讓使用者在操作上不需要去控制metamask，我在ropsten已經部屬了ticket和token contract，可點選[earn token] 按鍵，每按一次會發給你200元，每個座位是80元，購買後的座位可以再轉售出給別人，此範例是為了練習:
 
 <img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/TicketSystem.jpg" width="500px">
