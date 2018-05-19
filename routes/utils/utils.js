@@ -23,7 +23,6 @@ exports.deployContract = function(res, web3, address, privateKey, abi, bytecode)
             from: address, // default from address
             gasPrice: '1000000000'
         });
-    console.log('11111',myContract);
 
     myContract.deploy({
         data: '0x' + bytecode,

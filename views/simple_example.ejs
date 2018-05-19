@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Contract</title>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel='stylesheet' href='./stylesheets/style.css' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="./dist/web3.min.js"></script>
+    <script type="text/javascript">
+
+    var accountAddress ;
+    const bytecode = "608060405234801561001057600080fd5b5060df8061001f6000396000f3006080604052600436106049576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806360fe47b114604e5780636d4ce63c146078575b600080fd5b348015605957600080fd5b5060766004803603810190808035906020019092919050505060a0565b005b348015608357600080fd5b50608a60aa565b6040518082815260200191505060405180910390f35b8060008190555050565b600080549050905600a165627a7a72305820640d0047e825492d7635aeb22547b0fe2ab3c53d64697a47566aa3fff110242f0029";
+    const abi = [
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "get",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "x",
+            "type": "uint256"
+          }
+        ],
+        "name": "set",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+    window.addEventListener('load', function() {
+        console.log('version = ',web3.version.api);
+        console.log('isMetaMask = ',web3.currentProvider.isMetaMask);
+
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+            web3.eth.getAccounts(function(error, accounts) {
+                console.log('getAccounts = ',web3.eth.accounts);
+                if (web3.eth.accounts[0] !== accountAddress) {
+                    accountAddress = web3.eth.accounts[0];
+                    web3.eth.defaultAccount = accountAddress;
+                    alert('welcome '+accountAddress);
+                }
+            });
+
+            var accountInterval = setInterval(function () {
+                web3.eth.getAccounts(function(error, accounts) {
+                    if (web3.eth.accounts[0] !== accountAddress) {
+                        accountAddress = web3.eth.accounts[0];
+                        web3.eth.defaultAccount = accountAddress;
+                        alert('welcome '+accountAddress);
+                    }
+                });
+            }, 1000);
+
+        } else {
+            alert('please install metamask');
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+
+    })
+
+    function deployContract(){
+        console.log("deploy contract");
+
+        $("#deployButton").prop("disabled", true);
+        $("#receipt").text("Padding Confirmation");
+        $("#queryUrl").text("");
+        var myTimeInterval = setInterval(function(){
+            var s = new Date().getSeconds();
+            if(s%4 == 0){
+                $("#receipt").text("Padding Confirmation");
+            }else if(s%4 == 1){
+                $("#receipt").text("Padding Confirmation ...");
+            }else if(s%4 == 2){
+                $("#receipt").text("Padding Confirmation ......");
+            }else if(s%4 == 3){
+                $("#receipt").text("Padding Confirmation .........");
+            }
+        }, 1000);
+
+        const contract = web3.eth.contract(abi);
+        contractInstance = contract.new({ data: '0x' + bytecode, from: web3.eth.defaultAccount, gas: 4000000, gasPrice: '5000000000'},
+                function(error, result){
+                    console.log('error',error);
+                    console.log('result = ', result);
+                    console.log('transactionHash = ', result.transactionHash);
+                    waitForReceipt(result.transactionHash, function (receipt, error) {
+                        if(error == null){
+                            console.log("Transaction succeeded = ", receipt.contractAddress);
+                            $("#deployButton").prop("disabled", false);
+                            $("#receipt").text("contractAddress = "+receipt.contractAddress);
+                            $("#contractAddress").val(receipt.contractAddress);
+                            clearInterval(myTimeInterval);
+                        }else{
+                            $("#deployButton").prop("disabled", false);
+                            alert('error : ' + error);
+                            clearInterval(myTimeInterval);
+                        }
+                    });
+                });
+
+    }
+
+    function waitForReceipt(hash, cb) {
+        web3.eth.getTransactionReceipt(hash, function (err, receipt) {
+            if (err) {
+                console.log("getTransactionReceipt err.");
+                cb(null, err);
+            }
+            console.log("waitForReceipt.......");
+            if (receipt !== null) {
+                // Transaction went through
+                if (cb) {
+                    cb(receipt, null);
+                }
+            } else {
+                // Try again in 1 second
+                window.setTimeout(function () {
+                    waitForReceipt(hash, cb);
+                }, 1000);
+            }
+        });
+    }
+
+    function setContract(){
+      console.log("set contract");
+      if(checkContractAddress() && checkValueX()){
+        $("#setButton").prop("disabled", true);
+        $("#valueX").prop("disabled", true);
+        $("#resultSet").text("Padding Confirmation");
+        var myTimeInterval = setInterval(function(){
+          var s = new Date().getSeconds();
+          if(s%4 == 0){
+            $("#resultSet").text("Padding Confirmation");
+          }else if(s%4 == 1){
+            $("#resultSet").text("Padding Confirmation ...");
+          }else if(s%4 == 2){
+            $("#resultSet").text("Padding Confirmation ......");
+          }else if(s%4 == 3){
+            $("#resultSet").text("Padding Confirmation .........");
+          }
+        }, 1000);
+
+          var MyContract = web3.eth.contract(abi);
+          var myContractInstance = MyContract.at($("#contractAddress").val());
+          myContractInstance.set($("#valueX").val(), function(error, transaction){
+              console.log("error = ",error);
+              console.log("transaction = ",transaction);
+              if (error) {
+                  $("#setButton").prop("disabled", false);
+                  $("#valueX").prop("disabled", false);
+                  clearInterval(myTimeInterval);
+                  return;
+              }
+
+              waitForReceipt(transaction, function (receipt, error) {
+                  console.log("Transaction succeeded = ",receipt);
+                  if(error== null){
+                      $("#resultSet").text(receipt.transactionHash);
+                  }else{
+                      $("#resultSet").text(error);
+                  }
+                  $("#setButton").prop("disabled", false);
+                  $("#valueX").prop("disabled", false);
+                  clearInterval(myTimeInterval);
+              });
+          });
+
+      }
+    }
+
+    function getContract(){
+      console.log("get contract");
+        $("#getButton").prop("disabled", true);
+        $("#resultGet").text("loaing");
+        var myTimeInterval = setInterval(function(){
+            var s = new Date().getSeconds();
+            if(s%4 == 0){
+                $("#resultGet").text("loaing");
+            }else if(s%4 == 1){
+                $("#resultGet").text("loaing..");
+            }else if(s%4 == 2){
+                $("#resultGet").text("loaing....");
+            }else if(s%4 == 3){
+                $("#resultGet").text("loaing......");
+            }
+        }, 1000);
+
+      if(checkContractAddress()){
+           var MyContract = web3.eth.contract(abi);
+           var myContractInstance = MyContract.at($("#contractAddress").val());
+           var result = myContractInstance.get.call({from:web3.eth.defaultAccount },function(error, result){
+                console.log("error = ",error);
+                console.log("result = "+result);
+               if(error ==null){
+                   $("#resultGet").text(result);
+                   $("#getButton").prop("disabled", false);
+                   clearInterval(myTimeInterval);
+               }else{
+                   $("#resultGet").text(error);
+                   $("#getButton").prop("disabled", false);
+                   clearInterval(myTimeInterval);
+               }
+           });
+      }
+    }
+
+    function providerChange(){
+      console.log("providerChange");
+      var value = document.getElementById("providerSelect").value;
+      var key = document.getElementById("infuraKey").value;
+      if(value == "testrpc"){
+        $("#providerUrl").text("http://localhost:8545");
+        $("#infuraKey").prop("disabled", true);
+      }else{
+        $("#providerUrl").text("https://"+value+".infura.io/"+key);
+        $("#infuraKey").prop("disabled", false);
+      }
+    }
+
+
+    function checkContractAddress(){
+      if($("#contractAddress").val() == ''){
+        alert("請輸入Contract Address");
+        return false;
+      }
+      return true;
+    }
+
+    function checkValueX(){
+      if($("#valueX").val() == ''){
+        alert("請輸入x");
+        return false;
+      }
+      return true;
+    }
+
+  </script>
+</head>
+<body>
+
+<H2> Simple Contract Example</H2>
+<div style=" width:1300px;">
+  <div class="block" style="outline: 2px dashed black; float: left;float:left;  width:400px;">
+    pragma solidity ^0.4.23;<br>
+
+    contract SimpleStorage {<br>
+    &nbsp;&nbsp; uint storedData;<br>
+
+    &nbsp;&nbsp; function set(uint x) public {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; storedData = x;<br>
+    &nbsp;&nbsp; }<br>
+
+    &nbsp;&nbsp; function get() public constant returns (uint) {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; return storedData;<br>
+    &nbsp;&nbsp; }<br>
+    }<br>
+  </div>
+  <div class="block" style="outline: 2px dashed blue;margin-left: 30px;float:left;  width:700px; " >
+    <span id="receipt"></span> <br>
+    <a target="_blank" id="queryUrl"></a>
+  </div>
+</div>
+
+<div style="clear:both;"></div><br>
+<button id="deployButton"  onclick="deployContract()">deploy contract</button><br>
+
+<H2> Interacting with Smart Contracts </H2>
+<div style="outline: 1px dashed black; padding: 20px;">
+  <div class="row">
+    <span> Contract Address: </span>
+    <input type="text" id="contractAddress" placeholder="0xf47c11..." >
+  </div>
+
+  <button id="setButton" onclick="setContract()">set(x)</button>
+  <input type="text" id="valueX" placeholder="uint256" > <span id="resultSet"></span>
+  <br>
+  <br>
+  <button id="getButton" onclick="getContract()">get()</button>
+  <span id="resultGet"></span>
+</div>
+</body>
+</html>

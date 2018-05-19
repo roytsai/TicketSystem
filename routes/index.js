@@ -81,9 +81,9 @@ router.post('/web3/set', function(req, res, next) {
     var bytecode =  compileSolData[0];
     var abi = compileSolData[1];
 
-    var myContract = new web3.eth.Contract(abi, req.body.contractAddress, {gasPrice: '1000000000', from: userAddress});
+    var myContract = new web3.eth.Contract(abi, req.body.contractAddress, {gasPrice: '4000000000', from: userAddress});
 
-    myContract.methods.set(req.body.valueX).send({from: userAddress,gasPrice:'1000000000',gas: 300000,value:0}).then(
+    myContract.methods.set(req.body.valueX).send({from: userAddress,gasPrice:'4000000000',gas: 300000,value:0}).then(
         function(error,transactionHash){
             console.error(error);
             console.log(transactionHash);
@@ -118,7 +118,7 @@ router.post('/web3/get', function(req, res, next) {
     var compileSolData = compileSol("./contracts/SimpleStorage.sol");
     var bytecode =  compileSolData[0];
     var abi = compileSolData[1];
-    var myContract = new web3.eth.Contract(abi, req.body.contractAddress, {gasPrice: '1000000000', from: userAddress});
+    var myContract = new web3.eth.Contract(abi, req.body.contractAddress, {gasPrice: '4000000000', from: userAddress});
     myContract.methods.get().call({from: userAddress},function(error, result){
         console.log("error = "+error);
         console.log("result = "+result);
@@ -168,7 +168,7 @@ function deployContract(res, web3, address, privateKey){
     var myContract = new web3.eth.Contract(abi,
         {
             from: address, // default from address
-            gasPrice: '1000000000'
+            gasPrice: '4000000000'
         });
     estimationGas(myContract, bytecode);
 
@@ -177,7 +177,7 @@ function deployContract(res, web3, address, privateKey){
     }).send({
         from: address,
         gas: 3000000,
-        gasPrice: '1000000000'
+        gasPrice: '4000000000'
     },function(error, transactionHash){
         console.log('error : ',error);
         console.log('transactionHash : ',transactionHash);
@@ -187,22 +187,12 @@ function deployContract(res, web3, address, privateKey){
             res.status(500).send(error);
         }
     })
-        //.on('error', function(error){
-        //    console.log('error : ',error);
-        //})
-        //.on('transactionHash', function(transactionHash){
-        //    console.log('transactionHash : ',transactionHash);
-        //})
-        .on('receipt', function(receipt){
-            console.log(receipt);
-
-        })
-        //.on('confirmation', function(confirmationNumber, receipt){
-        //    console.log("confirmationNumber = ",confirmationNumber);
-        //})
-        .then(function(newContractInstance){
-            console.log('newContractAddress = ',newContractInstance.options.address) // instance with the new contract address
-        });
+    .on('receipt', function(receipt){
+        console.log(receipt);
+    })
+    .then(function(newContractInstance){
+        console.log('newContractAddress = ',newContractInstance.options.address) // instance with the new contract address
+    });
 
 }
 

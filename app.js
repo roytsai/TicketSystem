@@ -22,11 +22,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'bower_components')));
+app.use(express.static(path.join(__dirname, 'bower_components/web3')));
 
-app.use('/', routes);
+//app.use('/', routes);
+app.get('/', function(req, res, next) {
+  res.render('simple_example');
+});
 app.use('/tickets', ticketing_system);
 app.use('/users', users);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

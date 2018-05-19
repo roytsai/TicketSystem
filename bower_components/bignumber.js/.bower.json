@@ -1,7 +1,7 @@
 {
   "name": "bignumber.js",
   "main": "bignumber.js",
-  "version": "7.0.1",
+  "version": "7.1.0",
   "homepage": "https://github.com/MikeMcl/bignumber.js",
   "authors": [
     "Michael Mclaughlin <M8ch88l@gmail.com>"
@@ -32,11 +32,11 @@
     "*.json",
     "test"
   ],
-  "_release": "7.0.1",
+  "_release": "7.1.0",
   "_resolution": {
     "type": "version",
-    "tag": "v7.0.1",
-    "commit": "f070571ab8210b0def5ffdd2a1fda9623a34fb7f"
+    "tag": "v7.1.0",
+    "commit": "7f6504b94ecd4c8b3525962c94404e23aa8c125e"
   },
   "_source": "https://github.com/MikeMcl/bignumber.js.git",
   "_target": ">=2.0.0",
