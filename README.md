@@ -3,7 +3,7 @@
 這裡就不提區塊鍊的概念了，我主要描述想要開發區塊鍊技術該怎麼入手，重點有兩個 :
 	
 ### 1. Smart contract(智能合約)
-- 智能合約可依照創建者的需求所創建，透過[solidity](http://solidity.readthedocs.io/en/latest)語言編寫，IDE可選擇[Remix](https://ethereum.github.io/browser-solidity/)，並且Environment切換至javascript VM，這樣能用最單純的方式來學習合約編寫。
+- 智能合約可依照創建者的需求所創建，透過[solidity](http://solidity.readthedocs.io/en/latest)語言編寫，IDE選擇[Remix](https://ethereum.github.io/browser-solidity/)，並且Environment切換至javascript VM，這樣能夠用最單純的方式來學習合約編寫。
 	
 	<img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/javascriptVM.jpg" width="500px">
 	
@@ -26,73 +26,44 @@
   
 ## 範例1
 	
-> 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。若期待web3能成功與測試網路溝通，除非自己成為節點或透過Infura，至[Infura](https://infura.io/signup) 官網申請，就可以收到 API-key。
+> 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。<br>
+然而你想要成功連結測試網路，除非自己建立節點或透過Infura的節點進行溝通，至[Infura](https://infura.io/signup) 官網申請，就可以收到 API-key。
 <img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/simple.jpg" width="500px">
 
 ### 1. deploy({data:bytcode}).send() <br>
   - abi, bytecode : 可透過solc編譯或是remix直接複製。
   - userAddress : 使用者帳號的address。
 ~~~
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-    var myContract = new web3.eth.Contract(abi,
-        {
-            from: userAddress, 
-            gasPrice: '4000000000'
-        });
-	
-    myContract.deploy({
-        data: '0x' + bytecode
-    }).send({
-        from: userAddress,
-        gas: 3000000,
-        gasPrice: '4000000000'
-    },function(error, transactionHash){
-        if(error == undefined){
-            res.send(transactionHash);
-        }else{
-            res.status(500).send(error);
-        }
-    })	
+        const contract = web3.eth.contract(abi);
+        contractInstance = contract.new({ data: '0x' + bytecode, from: web3.eth.defaultAccount, gas: 4000000, gasPrice: '5000000000'},
+                function(error, result){
+
+                });
 ~~~
 
 ### 2. methods.myMethod().set() <br>
-  - userPrivateKey: 使用者的privateKey，會需要扣value的動作就會需要addWallet這個動作。<br>
-  - contractAddress: 操作已deploy的contract的address。<br>
-  - valueX: 合約中function的參數取決於你的設計。<br>
+  - contractAddress: 操作已deploy的contract address。<br>
+  - valueX: 合約中function的參數，這取決於你的合約設計。<br>
 ~~~
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-    var addWallet = web3.eth.accounts.wallet.add({
-        privateKey: userPrivateKey,
-        address: '0x3f45b28a11855efad36848c2138715dfb7e5bf2c'
-    });
+          var MyContract = web3.eth.contract(abi);
+          var myContractInstance = MyContract.at(contractAddress);
+          myContractInstance.set(valueX, function(error, transaction){
 
-    var myContract = new web3.eth.Contract(abi, contractAddress, {gasPrice: '4000000000', from: userAddress});
-
-    myContract.methods.set(valueX).send({from: userAddress,gasPrice:'4000000000',gas: 300000,value:0}).then(
-        function(error,transactionHash){
-            console.error(error);
-            console.log(transactionHash);
-            res.send('ok');
-    });
+          });
 ~~~
 
 ### 3. methods.myMethod().call() <br>
 
 ~~~
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-    var myContract = new web3.eth.Contract(abi, contractAddress, {gasPrice: '4000000000', from: userAddress});
+           var MyContract = web3.eth.contract(abi);
+           var myContractInstance = MyContract.at(contractAddress);
+           var result = myContractInstance.get.call({from:web3.eth.defaultAccount },function(error, result){
 
-    myContract.methods.get().call({from: userAddress},function(error, result){
-        if(error == undefined){
-            res.send(String(result));
-        }else{
-            res.send(String(error));
-        }
-    });
+           });
 ~~~
 
 ## 範例2
-> 程式碼中的第二個範例，我利用ERC20-token來實作一個訂票系統，使用者安裝metamask後切換到ropsten，我在ropsten已經deploy了ticket和token contract，點選[earn token] Button，每按一次會發給你200元，每個座位是80元，購買後的座位可以再轉售出給別人，此範例是為了練習:
+> 程式碼中的第二個範例，我利用ERC20-token來實作一個訂票系統，而我是在back-end操作contracts，讓使用者在操作上不需要去控制metamask，我在ropsten已經部屬了ticket和token contract，可點選[earn token] 按鍵，每按一次會發給你200元，每個座位是80元，購買後的座位可以再轉售出給別人，此範例是為了練習:
 
 <img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/TicketSystem.jpg" width="500px">
 
