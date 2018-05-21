@@ -20,10 +20,38 @@
 	2. npm install bower -g<br>
 	3. bower install web3 (供前端使用)<br>
 	4. npm install web3 (供後端使用)<br>
-  
-  
-  
-  
+
+### 3. Contract testing
+- 既然牽扯到錢，合約就很重要，如果你需要測試合約可以透過[Truffle](http://truffleframework.com/docs/)來完成<br>
+    1. npm install -g truffle <br>
+    2. 建立一個folder(./truffle/)<br>
+    3. truffle init <br>
+    4. 將你的contracts放置到 (./truffle/contracts/ )<br>
+    5. 在(./truffle/test/)就可以開始寫你的測試程式了  <br>
+    6. 寫好測試程式好後在(./truffle/)執行 ```truffle.cmd test``` <br>
+
+	
+- 測試範例(./truffle/test/TestSimpleStorage.sol)如下
+```
+pragma solidity ^0.4.23;
+import "truffle/Assert.sol";
+import "truffle/DeployedAddresses.sol";
+import "../contracts/SimpleStorage.sol";
+
+contract TestSimpleStorage {
+	constructor() public{ }
+	function testGet() public{
+		SimpleStorage myStorage = new SimpleStorage();
+		Assert.isZero(myStorage.get(),"x is zero");
+	}
+	function testSet() public{
+		SimpleStorage myStorage = new SimpleStorage();
+		uint expected = 3;
+		myStorage.set(expected);
+		Assert.equal(myStorage.get(), expected, "x is 3");
+	}
+    }
+```
 ## 範例1 (simple_example.ejs)
 	
 > 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。<br>
