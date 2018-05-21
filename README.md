@@ -8,18 +8,18 @@
 	<img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/javascriptVM.jpg" width="500px">
 	
 - 更進階一點是，實際試著透過RPC的環境去deploy和methods操作。<br>
-	1. chrome安裝metamask。
-	2. npm install -g ethereumjs-testrpc (直接叫出cmd輸入testrpc即有10組帳號使用)。
-	3. 透過操作metamask可連線至Main Ethereum Network或其他Test Network，或連至testrpc的環境。
+    1. chrome安裝metamask。<br>
+    2. npm install -g ethereumjs-testrpc (直接叫出cmd輸入testrpc即有10組帳號使用)。<br>
+    3. 透過操作metamask可連線至Main Ethereum Network或其他Test Network，或連至testrpc的環境。<br>
 	
   <img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/metamask.jpg" width="200px">
   
 ### 2. Decentralized Applications
 - 我選擇透過nodejs+express的架構開發，並搭配[web3](https://web3js.readthedocs.io/en/1.0/)套件(1.0.0-beta.34)來操作deploy與methods，需要注意的是前端的web3版本只有到0.20.6與後端可能會不一致，程式碼的寫法會有所不同，初始步驟如下:<br>
-	1. 開啟一個nodejs專案<br>
-	2. npm install bower -g<br>
-	3. bower install web3 (供前端使用)<br>
-	4. npm install web3 (供後端使用)<br>
+    1. 開啟一個nodejs專案<br>
+    2. npm install bower -g<br>
+    3. bower install web3 (供前端使用)<br>
+    4. npm install web3 (供後端使用)<br>
 
 ### 3. Contract testing
 - 既然牽扯到錢，合約就很重要，如果你需要測試合約可以透過[Truffle](http://truffleframework.com/docs/)來完成<br>
@@ -52,6 +52,9 @@ contract TestSimpleStorage {
 	}
     }
 ```
+<img src="https://github.com/roytsai/TicketSystem/blob/master/public/images/truffle.jpg">
+
+
 ## 範例1 (simple_example.ejs)
 	
 > 程式碼中的第一個範例是一個簡單的例子，如何透過web3來deply、myMethod.call、myMethod.send。<br>
